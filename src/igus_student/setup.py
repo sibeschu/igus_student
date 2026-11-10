@@ -28,7 +28,8 @@ setup(
             'puck_opencv = igus_student.puck_detector:main',
             'puck_2d_to_3d = igus_student.puck_2d_to_3d:main',
             'puck_3d_to_world = igus_student.puck_3d_to_world:main',
-            'subscriber_example = igus_student.subscriber_example:main'
+            'subscriber_example = igus_student.subscriber_example:main',
+            'goal_builder2 = igus_student.goal_builder2:main',
         ],
     },
 )

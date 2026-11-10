@@ -9,6 +9,13 @@
 
   <exec_depend>visualization_msgs</exec_depend>
   <exec_depend>igus_student_msgs</exec_depend>
+  <exec_depend>igus_rebel_description</exec_depend>
+  <exec_depend>igus_rebel_moveit_config</exec_depend>
+  <exec_depend>pymoveit2</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
   
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

@@ -49,7 +49,7 @@ def generate_launch_description():
         ]
     )
     
-    # Launch gazebo simulator and spwan the robot
+    # Launch gazebo simulator and spawn the robot
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('igus_rebel_moveit_config'), 'launch', 'gazebo.launch.py')

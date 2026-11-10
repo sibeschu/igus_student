@@ -1,7 +1,7 @@
-- [IGUS Student](#IGUS-Student)
-  - [Kamera installieren / inbetriebnehmen](#kamera-installieren--inbetriebnehmen)
+- [Igus Student](#Igus-Student)
+  - [Workspace herunterladen](#0-workspace-herunterladen)
   - [Workspace vorbereiten](#1-workspace-vorbereiten)
-  - [Robot und MoveIt starten](#2-robot-und-moveit-starten)
+  - [Roboter und MoveIt starten](#2-roboter-und-moveit-starten)
     - [Simulation](#simulation)
     - [Echter Roboter](#echter-roboter)
   - [Erste Schritte](#erste-schritte)
@@ -21,23 +21,22 @@
   - [Koordinatensystem](#koordinatensystem)
     - [Kartesische Koordinaten (X, Y, Z)](#kartesische-koordinaten-x-y-z)
     - [Orientierung (Roll, Pitch, Yaw)](#orientierung-roll-pitch-yaw)
+  - [Misc](#Misc)
+    - [Kamera installieren / inbetriebnehmen](#kamera-installieren--inbetriebnehmen)
 
-# IGUS Student
+# Igus Student
 
-### Kamera installieren / inbetriebnehmen
+### 0. Workspace herunterladen
 
 ```bash
-sudo apt install ros-jazzy-librealsense2*
-
-sudo apt install ros-jazzy-realsense2-*
-
+git clone https://github.com/sibeschu/igus_student.git
 ```
 
 ### 1. Workspace vorbereiten
 
 ```bash
 # In das Workspace-Verzeichnis navigieren
-cd ~/rebel_student
+cd ~/igus_student
 
 # Den Workspace bauen
 colcon build --symlink-install
@@ -45,11 +44,11 @@ colcon build --symlink-install
 # --symlink-install erzeugt einen symbolischen Link zu den src-Dateien
 # ohne --symlink-install muss man nach jeder Änderung erneut über colcon build bauen
 
-# Workspace laden
-igus
+# Workspace aktivieren
+source install/setup.bash
 ```
 
-### 2. Robot und MoveIt starten
+### 2. Roboter und MoveIt starten
 
 Bevor du dein Programm startest, musst du den Roboter und MoveIt starten:
 
@@ -72,7 +71,7 @@ ros2 launch igus_rebel rebel.launch.py
 # Terminal 2: Motion planner starten
 ros2 launch igus_rebel_moveit_config igus_rebel_motion_planner.launch.py use_gui:=true
 
-# Terminal 3: Dein Student-Programm
+# Terminal 3: Dein selbstgeschriebenes Programm starten
 ros2 run igus_student student_control
 ```
 
@@ -81,13 +80,15 @@ ros2 run igus_student student_control
 ### Wo schreibe ich Code?
 
 ```bash
+igus_student
 └── src
     ├── igus_student
     │   ├── igus_student
-    │   │   └── student_control.py
+    │   │   └── student_control.py # <── Einstieg hier
+    ├── igus_student_msgs
+    └── igus_rebel_ros2
 ```
 
-~ ab Zeile 80
 
 ## Grundlegende Funktionen
 
@@ -164,11 +165,17 @@ Wie man eigene msg-Typen (Interfaces) anlegt. (Nicht erforderlich für Einführu
 
 "Sorting" Position kann in src/igus_rebel_ros2/src/igus_rebel_moveit_config/config/igus_rebel2.srdf geändert werden. In dieser Datei einfach nach "sorting" suchen. Die Joint Positionen werden in RAD angegeben.
 
-## Fehlerbehebung
+# Troubleshooting
 
-### Problem: NOT-AUS
+### Problem: Dependencies fehlen (z.B. ros-gz-sim not found)
+**Lösung**: 
+```bash
+cd igus_student
+rosdep install --from-paths src -y --ignore-src
+```
 
-**Lösung:** NOT-AUS herausdrehen. `rebel.launch.py` neustarten.
+### Problem: Not-Aus
+
 
 ### Problem: "move_group server not available"
 
@@ -180,14 +187,15 @@ ros2 launch igus_rebel_moveit_config igus_rebel_motion_planner.launch.py use_gui
 ### Problem: Roboter bewegt sich nicht
 
 **Lösung:**
-Überprüfe, ob die Zielposition im Arbeitsbereich des Roboters liegt
+Überprüfe, ob die Zielposition im Arbeitsbereich des Roboters liegt.
+**Lösung:** Überprüfe ob der Not-Aus Schalter betätigt ist. Falls ja, Not-Aus zurücksetzen und `rebel.launch.py` neustarten.
 
 ### Problem: Timeout beim Warten auf Bewegung
 
-Dies tritt auf, wenn der Roboter die Zielposition nicht erreichen kann. Mögliche Ursachen:
+Dies kann auftreten wenn der Roboter die Zielposition nicht erreichen kann. Mögliche Ursachen:
 - Position ist außerhalb des Arbeitsbereichs
+- Roboter kann die Orientierung des Endeffektors nicht erreichen
 - Kollision mit Hindernis erkannt
-- Roboter kann die Orientierung nicht erreichen
 
 ## Koordinatensystem
 
@@ -213,4 +221,13 @@ pi = math.pi
 # Roll = 0, Pitch = 0, Yaw = 0: Roboter zeigt nach oben
 ```
 
-Viel Erfolg beim Programmieren!
+## Misc
+
+### Kamera installieren / inbetriebnehmen
+
+```bash
+sudo apt install ros-jazzy-librealsense2*
+
+sudo apt install ros-jazzy-realsense2-*
+
+```

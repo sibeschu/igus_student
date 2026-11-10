@@ -92,7 +92,42 @@ def opaque_func(context, *args, **kwargs):
         ]
     )
     ompl_context = load_yaml(Path(ompl_file.perform(context)))
-    ompl = {"ompl": ompl_context}
+
+    pilz_file = PathJoinSubstitution(
+        [
+            FindPackageShare("igus_rebel_moveit_config"),
+            "config",
+            "pilz_industrial_motion_planner_planning.yaml",
+        ]
+    )
+    pilz_context = load_yaml(Path(pilz_file.perform(context)))
+
+    pilz_cartesian_limits_file = PathJoinSubstitution(
+        [
+            FindPackageShare("igus_rebel_moveit_config"),
+            "config",
+            "pilz_cartesian_limits.yaml",
+        ]
+    )
+    pilz_cartesian_limits = load_yaml(
+        Path(pilz_cartesian_limits_file.perform(context))
+    )
+
+    # This package's OMPL file keeps pipeline parameters under "move_group";
+    # expose them in the standard pipeline-specific namespace as well.
+    ompl_pipeline = dict(ompl_context.get("move_group", {}))
+    ompl_pipeline.update(
+        {key: value for key, value in ompl_context.items() if key != "move_group"}
+    )
+    planning_pipelines = {
+        "planning_pipelines": [
+            "ompl",
+            "pilz_industrial_motion_planner",
+        ],
+        "default_planning_pipeline": "pilz_industrial_motion_planner",
+        "ompl": ompl_pipeline,
+        "pilz_industrial_motion_planner": pilz_context,
+    }
 
     moveit_controllers = {
         "moveit_simple_controller_manager": controllers_dict,
@@ -116,6 +151,7 @@ def opaque_func(context, *args, **kwargs):
     
     kinematics_config = load_yaml(Path(robot_description_kinematics_file.perform(context)))
     joint_limits_config = load_yaml(Path(joint_limits_file.perform(context)))
+    joint_limits_config.update(pilz_cartesian_limits)
 
     moveit_args_not_concatenated = [
         {"robot_description": robot_description.perform(context)},
@@ -123,6 +159,7 @@ def opaque_func(context, *args, **kwargs):
         {"robot_description_kinematics": kinematics_config},
         {"robot_description_planning": joint_limits_config},
         moveit_controllers,
+        planning_pipelines,
         planning_scene_monitor_parameters,
         {
             "publish_robot_description": True,
